@@ -27,12 +27,23 @@ int print_string (va_list l, flags_t *f, len_mod *m, int fld_wdth, int prec_sn)
 		count = zero_precision(count, fld_wdth, f);
 		return count;
 	}
-	if ( prec_sn > 1 && prec_sn < count)
+	if (prec_sn > 1 && prec_sn < count)
         {
-		
-		char *ptr = s;
-		*(ptr + prec_sn) = '\0';
-		count = prec_sn;
+		char *ptr = malloc(prec_sn + 1);
+		if (ptr)
+    		{
+			count = prec_sn;
+        		strncpy(ptr, s, prec_sn);
+        		ptr[prec_sn] = '\0';
+			count += apply_str(ptr, f, fld_wdth, count);
+       			free(ptr);
+			return count;
+    		}
+		else
+		{
+			_printf("Malloc Fail");
+			return 0;
+		}
         }	
 	count += apply_str(s, f, fld_wdth, count);
 return (count);
@@ -84,7 +95,7 @@ int apply_char(int c, flags_t *f, int fld_wdth, int no_ofchar)
 	
 	if (fld_wdth > no_ofchar  && f->dash_flag != 1 && f->zero_flag == 1)
 	{
-		count += print_padding(padding, fld_wdth - no_ofchar);
+		count += print_padding('0', fld_wdth - no_ofchar);
 		_putchar(c);
 		return (count);
 	}
